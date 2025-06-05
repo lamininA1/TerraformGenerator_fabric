@@ -3,12 +3,10 @@ package org.terraform.main;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.terraform.biome.BiomeBank;
 import org.terraform.coregen.ChunkCache;
@@ -28,7 +26,6 @@ import org.terraform.structure.StructureRegistry;
 import org.terraform.tree.SaplingOverrider;
 import org.terraform.utils.BlockUtils;
 import org.terraform.utils.GenUtils;
-import org.terraform.utils.bstats.TerraformGeneratorMetricsHandler;
 import org.terraform.utils.datastructs.ConcurrentLRUCache;
 import org.terraform.utils.noise.NoiseCacheHandler;
 import org.terraform.utils.version.Version;
@@ -42,7 +39,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TerraformGeneratorPlugin extends JavaPlugin implements Listener {
+public class TerraformGeneratorPlugin {
 
     public static final Set<String> INJECTED_WORLDS = new HashSet<>();
     public static final @NotNull PrivateFieldHandler privateFieldHandler;
@@ -67,24 +64,25 @@ public class TerraformGeneratorPlugin extends JavaPlugin implements Listener {
     }
 
     private LanguageManager lang;
+    private final File dataFolder = new File("./terraformgenerator");
 
     public static TerraformGeneratorPlugin get() {
         return instance;
     }
 
-    @Override
-    public void onEnable() {
-        super.onEnable();
+    public void initialize() {
         GenUtils.initGenUtils();
         BlockUtils.initBlockUtils();
         instance = this;
 
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs();
+        }
+
         try {
             TConfig.init(new File(getDataFolder(), "config.yml"));
-        }
-        catch (IOException e) {
-            getLogger().severe("Failed to load config.yml: " + e.getMessage());
-            getPluginLoader().disablePlugin(this);
+        } catch (IOException e) {
+            System.err.println("Failed to load config.yml: " + e.getMessage());
             return;
         }
 
@@ -129,12 +127,9 @@ public class TerraformGeneratorPlugin extends JavaPlugin implements Listener {
 
         LangOpt.init(this);
         watchdogSuppressant = new TfgWatchdogSuppressant();
-        new TerraformGeneratorMetricsHandler(this); // bStats
 
         TerraformGenerator.updateSeaLevelFromConfig();
-        new TerraformCommandManager(this, "terraform", "terra");
-        Bukkit.getPluginManager().registerEvents(this, this);
-        Bukkit.getPluginManager().registerEvents(new SchematicListener(), this);
+
         String version = Version.getVersionPackage();
         logger.stdout("Detected version: " + version + ", number: " + Version.DOUBLE);
         try {
@@ -158,15 +153,14 @@ public class TerraformGeneratorPlugin extends JavaPlugin implements Listener {
         }
 
         if (TConfig.c.MISC_SAPLING_CUSTOM_TREES_ENABLED) {
-            Bukkit.getPluginManager().registerEvents(new SaplingOverrider(), this);
+            // Custom sapling handling would be registered here in Bukkit
         }
 
         StructureRegistry.init();
     }
 
 
-    @Override
-    public void onDisable() {
+    public void shutdown() {
         // This is already done in NativeGeneratorPatcherPopulator World Unload Event.
         // NativeGeneratorPatcherPopulator.flushChanges();
     }
@@ -238,7 +232,6 @@ public class TerraformGeneratorPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    @Override
     public ChunkGenerator getDefaultWorldGenerator(@NotNull String worldName, String id) {
         return new TerraformGenerator();
     }
@@ -246,6 +239,10 @@ public class TerraformGeneratorPlugin extends JavaPlugin implements Listener {
     public LanguageManager getLang() {
         // TODO Auto-generated method stub
         return lang;
+    }
+
+    public File getDataFolder() {
+        return dataFolder;
     }
 
 }
