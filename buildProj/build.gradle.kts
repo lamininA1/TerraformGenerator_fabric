@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 plugins {
     id("com.gradleup.shadow").version("9.0.0-beta2")
 }
@@ -25,13 +27,12 @@ dependencies {
 
 tasks.shadowJar {
     doFirst {
-        val yamlFile = file("${rootProject.projectDir}/common/src/main/resources/plugin.yml")
-        val yaml = org.yaml.snakeyaml.Yaml()
-        val config = yaml.load<Map<String, Any>>(yamlFile.inputStream())
+        val jsonFile = file("${rootProject.projectDir}/common/src/main/resources/fabric.mod.json")
+        val json = JsonSlurper().parse(jsonFile) as Map<*, *>
 
-        // Set the archive name and version based on the plugin.yml file
-        archiveBaseName.set(config["name"].toString())
-        archiveVersion.set(config["version"].toString())
+        // Set the archive name and version based on the fabric.mod.json file
+        archiveBaseName.set(json["name"].toString())
+        archiveVersion.set(json["version"].toString())
         archiveClassifier.set("") // Don't add the '-all' postfix.
     }
 
