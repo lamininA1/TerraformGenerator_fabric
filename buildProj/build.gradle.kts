@@ -37,8 +37,6 @@ tasks.shadowJar {
     }
 
     exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
-
-    relocate("io.papermc.lib", "org.terraform.lib")
 }
 
 tasks.register<Copy>("deploy") {
