@@ -1,19 +1,17 @@
 package org.terraform.main;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
 public class TerraformGeneratorFabric implements ModInitializer {
+
+    private final TerraformGeneratorPlugin plugin = new TerraformGeneratorPlugin();
+
     @Override
     public void onInitialize() {
-        // Basic Fabric initialization
         System.out.println("TerraformGenerator fabric mod initializing");
-        // Reuse existing plugin initialization logic where possible
-        try {
-            TerraformGeneratorPlugin plugin = new TerraformGeneratorPlugin();
-            plugin.onEnable();
-        } catch (Exception e) {
-            System.err.println("Failed to run plugin initialization: " + e.getMessage());
-            e.printStackTrace();
-        }
+
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> plugin.initialize());
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> plugin.shutdown());
     }
 }
