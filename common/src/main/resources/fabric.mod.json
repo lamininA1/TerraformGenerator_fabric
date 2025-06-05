@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "terraformgenerator",
+  "version": "19.1.1",
+  "name": "TerraformGenerator",
+  "description": "World Generator",
+  "authors": ["Hex_27"],
+  "entrypoints": {
+    "main": ["org.terraform.main.TerraformGeneratorFabric"]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.0",
+    "minecraft": "*"
+  }
+}
