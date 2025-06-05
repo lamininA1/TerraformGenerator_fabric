@@ -12,6 +12,8 @@ import org.terraform.biome.BiomeBank;
 import org.terraform.coregen.ChunkCache;
 import org.terraform.coregen.HeightMap;
 import org.terraform.coregen.NMSInjectorAbstract;
+import org.terraform.coregen.fabric.FabricNMSInjectorAbstract;
+import net.minecraft.server.level.ServerLevel;
 import org.terraform.coregen.TerraformPopulator;
 import org.terraform.coregen.bukkit.TerraformGenerator;
 import org.terraform.coregen.populatordata.PopulatorDataPostGen;
@@ -229,6 +231,29 @@ public class TerraformGeneratorPlugin {
         if(INJECTED_WORLDS.contains(event.getWorld().getName())) {
             logger.stdout("Flushing noise cache for world " + event.getWorld().getName());
             NoiseCacheHandler.flushNoiseCaches(TerraformWorld.get(event.getWorld()));
+        }
+    }
+
+    // Fabric lifecycle hooks
+    public void onFabricWorldLoad(ServerLevel world) {
+        if (injector instanceof org.terraform.coregen.fabric.FabricNMSInjectorAbstract fabricInjector) {
+            TerraformWorld tw = TerraformWorld.get(world.dimension().location().toString(), world.getSeed());
+            if (fabricInjector.attemptInject(world)) {
+                INJECTED_WORLDS.add(tw.getName());
+                tw.minY = fabricInjector.getMinY();
+                tw.maxY = fabricInjector.getMaxY();
+                logger.stdout("Fabric injection success for " + tw.getName());
+            } else {
+                logger.stdout("Fabric injection failed for " + tw.getName());
+            }
+        }
+    }
+
+    public void onFabricWorldUnload(ServerLevel world) {
+        String name = world.dimension().location().toString();
+        if(INJECTED_WORLDS.contains(name)) {
+            logger.stdout("Flushing noise cache for world " + name);
+            NoiseCacheHandler.flushNoiseCaches(TerraformWorld.get(name, world.getSeed()));
         }
     }
 
