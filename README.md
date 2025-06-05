@@ -34,7 +34,7 @@ cd TerraformGenerator
 gradlew buildProj:shadowJar
 ```
 
-The jar at `buildProj/build/libs/buildProj-all.jar` is the plugin.
+The built mod will be located at `buildProj/build/libs/TerraformGenerator-<version>.jar`.
 
 <h2 name="support">Support</h2>
 
