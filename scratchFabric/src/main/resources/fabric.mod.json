@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "terraformgenerator_scratch",
+  "version": "0.1.0",
+  "name": "TerraformGeneratorScratch",
+  "entrypoints": {
+    "main": ["org.terraform.scratch.TerraformGeneratorScratch"]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.0",
+    "minecraft": "*"
+  }
+}
