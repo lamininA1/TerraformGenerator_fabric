@@ -17,21 +17,8 @@ public class Version {
     private final static Map<Double, String> availableVersions = new HashMap<>();
 
     static {
-        availableVersions.put(18.2, "v1_18_R2");
-        availableVersions.put(19.4, "v1_19_R3");
-        availableVersions.put(20.0, "v1_20_R1");
-        availableVersions.put(20.1, "v1_20_R1");
-        availableVersions.put(20.2, "v1_20_R2");
-        availableVersions.put(20.3, "v1_20_R3");
-        availableVersions.put(20.4, "v1_20_R3");
-        availableVersions.put(20.5, "v1_20_R4");
-        availableVersions.put(20.6, "v1_20_R4");
-        availableVersions.put(21.0, "v1_21_R1");
-        availableVersions.put(21.1, "v1_21_R1");
-        availableVersions.put(21.2, "v1_21_R2");
-        availableVersions.put(21.3, "v1_21_R2");
-        availableVersions.put(21.4, "v1_21_R3");
-        availableVersions.put(21.5, "v1_21_R4");
+        // Only Minecraft 1.21.4 is supported
+        availableVersions.put(21.4, "v1_21_R4");
     }
 
     // Since I keep forgetting, an example version is 19.1 for 1.19.1
